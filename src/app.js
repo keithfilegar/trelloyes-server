@@ -115,6 +115,35 @@ app.post('/card', (req, res) => {
         .json(card)
 })
 
+app.delete('/card/:id', (req, res) => {
+    const { id } = req.params;
+    
+    const cardIndex = cards.findIndex(c => c.id == id);
+
+    if(cardIndex === -1) {
+        logger.error(`Card with id ${id} not found.`)
+        return res
+            .status(404)
+            .send('Not found');
+    }
+
+    //remove card from lists
+    //assume cardIds aren't duplicated in cardIds array
+
+    lists.forEach(list => {
+        const cardIds = list.cardIds.filter(cid => cid !== id);
+        list.cardIds = cardIds;
+    })
+
+    cards.splice(cardIndex, 1);
+
+    logger.info(`Card with ${id} deleted.`);
+
+    res
+        .status(204)
+        .end();
+})
+
 app.get('/list', (req, res) => {
         res
             .json(lists);
@@ -197,7 +226,7 @@ app.delete('/list/:id', (req, res) => {
     logger.info(`List with id ${id} deleted.`);
     res
         .status(204)
-        .send('Not Found')
+        .end();
 })
 
 app.use(function errorHandler(error, req, res, next) {
