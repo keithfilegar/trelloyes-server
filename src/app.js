@@ -19,7 +19,6 @@ app.use(cors())
 
 app.use(function validateBearerToken(req, res, next) {
     const apiToken = process.env.API_TOKEN
-    console.log(apiToken)
     const authToken = req.get('Authorization')
 
     if(!authToken || authToken.split(' ')[1] !== apiToken) {
